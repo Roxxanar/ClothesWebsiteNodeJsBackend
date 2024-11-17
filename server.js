@@ -147,8 +147,20 @@ app.post('/login', (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
+    const user = result[0];
+
+    // If passwords are hashed, verify them (optional)
+    // bcrypt.compare(password, user.Password, (err, isMatch) => {
+    //   if (err) return res.status(500).json({ error: 'Internal Server Error' });
+    //   if (!isMatch) return res.status(401).json({ error: 'Invalid email or password' });
+
+    // Generate a JWT token
+    const token = 123;
+    //const token = jwt.sign({ userId: user.id, email: user['E-mail'] }, JWT_SECRET, { expiresIn: '1h' });
+
+
     // User found, authentication successful
-    res.status(200).json({ message: 'Login successful' });
+    res.status(200).json({ message: 'Login successful', token, username: user['First Name'] });
   });
 });
 
