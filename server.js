@@ -165,6 +165,47 @@ app.post('/login', (req, res) => {
 });
 
 
+// POST /usersubscribed route
+app.post('/usersubscribed', (req, res) => {
+  const { email } = req.body;  // Extract email from request body
+
+  const checkUserSubQuery = 'SELECT * FROM users WHERE `E-mail` = ?';
+  db.query(checkUserSubQuery, [email], (err, result) => {
+    if (err) {
+      console.error('Error checking user existence:', err);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+
+    if (result.length > 0) {
+      if (result[0].IsSubscribed === 1) {
+        return res.status(200).json({ message: 'You are already subscribed' });
+      } else {
+        const updateQuery = 'UPDATE users SET `IsSubscribed` = 1 WHERE `E-mail` = ?';
+        db.query(updateQuery, [email], (err) => {
+          if (err) {
+            console.error('Error updating subscription:', err);
+            return res.status(500).json({ error: 'Existing user not subscribed Error' });
+          }
+          return res.status(200).json({ message: 'You are now subscribed' });
+        });
+      }
+    } else {
+      const insertQuery = 'INSERT INTO users (`E-mail`, `IsSubscribed`) VALUES (?, 1)';
+      db.query(insertQuery, [email], (err) => {
+        if (err) {
+          console.error('Error inserting user:', err);
+          return res.status(500).json({ error: 'New user not subscribed Error' });
+        }
+        return res.status(201).json({ message: 'User subscribed successfully' });
+      });
+    }
+  });
+});
+
+
+
+
+
 
 
 // Start the server
