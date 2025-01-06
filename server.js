@@ -9,6 +9,34 @@ const app = express();
 const SECRET_KEY = '2000';
 
 
+const { Client } = require('pg');
+
+require('dotenv').config();  // To load environment variables
+// Replace the connection string with your Supabase connection URL
+const client = new Client({
+  connectionString: process.env.SUPABASE_DATABASE_URL,
+});
+
+console.log(process.env.SUPABASE_DATABASE_URL);  // Check if the URL is printed
+
+
+client.connect()
+  .then(() => {
+    console.log('Connected to the database');
+  })
+  .catch(err => {
+    console.error('Connection error', err.stack);
+  });
+
+
+
+
+
+
+
+
+
+
 const corsOptions = {
   origin: 'http://localhost:4200', // The address of the Angular frontend
   optionsSuccessStatus: 200,
@@ -20,21 +48,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // Create a connection to MySQL database
-const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root', // Default user, change if necessary
-  password: '', // Default password, change if necessary
-  database: 'mango' // Name of your database
-});
 
-// Connect to the database
-db.connect(err => {
-  if (err) {
-    console.error('Database connection failed: ' + err.stack);
-    return;
-  }
-  console.log('Connected to MySQL');
-});
 
 // Create an API endpoint to fetch users
 app.get('/clothing', (req, res) => {
@@ -209,7 +223,4 @@ app.post('/usersubscribed', (req, res) => {
 
 
 // Start the server
-const port = 3000;
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+
